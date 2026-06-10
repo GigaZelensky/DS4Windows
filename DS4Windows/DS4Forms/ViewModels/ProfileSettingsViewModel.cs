@@ -50,6 +50,80 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             "Always On",
         };
 
+        private static readonly DS4Controls[] syntheticMotionControlChoices =
+        {
+            DS4Controls.None,
+            DS4Controls.LYNeg,
+            DS4Controls.LYPos,
+            DS4Controls.LXNeg,
+            DS4Controls.LXPos,
+            DS4Controls.L2,
+            DS4Controls.R2,
+            DS4Controls.L2FullPull,
+            DS4Controls.R2FullPull,
+            DS4Controls.L1,
+            DS4Controls.R1,
+            DS4Controls.L3,
+            DS4Controls.R3,
+            DS4Controls.DpadUp,
+            DS4Controls.DpadDown,
+            DS4Controls.DpadLeft,
+            DS4Controls.DpadRight,
+            DS4Controls.Cross,
+            DS4Controls.Circle,
+            DS4Controls.Square,
+            DS4Controls.Triangle,
+            DS4Controls.Share,
+            DS4Controls.Options,
+            DS4Controls.PS,
+            DS4Controls.Mute,
+            DS4Controls.Capture,
+            DS4Controls.SideL,
+            DS4Controls.SideR,
+            DS4Controls.FnL,
+            DS4Controls.FnR,
+            DS4Controls.BLP,
+            DS4Controls.BRP,
+        };
+
+        private static readonly string[] syntheticMotionControlNames =
+        {
+            "None",
+            "Left Stick Up",
+            "Left Stick Down",
+            "Left Stick Left",
+            "Left Stick Right",
+            "L2",
+            "R2",
+            "L2 Full Pull",
+            "R2 Full Pull",
+            "L1",
+            "R1",
+            "L3",
+            "R3",
+            "D-Pad Up",
+            "D-Pad Down",
+            "D-Pad Left",
+            "D-Pad Right",
+            "Cross",
+            "Circle",
+            "Square",
+            "Triangle",
+            "Share",
+            "Options",
+            "PS",
+            "Mute",
+            "Capture",
+            "Side L",
+            "Side R",
+            "Fn L",
+            "Fn R",
+            "Bottom Left Paddle",
+            "Bottom Right Paddle",
+        };
+
+        public IEnumerable<string> SyntheticMotionControlItems => syntheticMotionControlNames;
+
         private int device;
         public int Device { get => device; }
 
@@ -945,6 +1019,74 @@ namespace DS4WinWPF.DS4Forms.ViewModels
         //public event EventHandler GyroOutModeIndexChanging;
         public event PropertyChangingHandler<GyroOutMode> GyroOutModeIndexChanging;
         public event EventHandler GyroOutModeIndexChanged;
+
+        public bool SyntheticMotionEnabled
+        {
+            get => Global.GetSyntheticMotionInfo(device).enabled;
+            set => Global.GetSyntheticMotionInfo(device).enabled = value;
+        }
+
+        public int SyntheticMotionUpControlIndex
+        {
+            get => GetSyntheticMotionControlIndex(Global.GetSyntheticMotionInfo(device).upControl);
+            set => Global.GetSyntheticMotionInfo(device).upControl = GetSyntheticMotionControl(value);
+        }
+
+        public int SyntheticMotionDownControlIndex
+        {
+            get => GetSyntheticMotionControlIndex(Global.GetSyntheticMotionInfo(device).downControl);
+            set => Global.GetSyntheticMotionInfo(device).downControl = GetSyntheticMotionControl(value);
+        }
+
+        public int SyntheticMotionLeftControlIndex
+        {
+            get => GetSyntheticMotionControlIndex(Global.GetSyntheticMotionInfo(device).leftControl);
+            set => Global.GetSyntheticMotionInfo(device).leftControl = GetSyntheticMotionControl(value);
+        }
+
+        public int SyntheticMotionRightControlIndex
+        {
+            get => GetSyntheticMotionControlIndex(Global.GetSyntheticMotionInfo(device).rightControl);
+            set => Global.GetSyntheticMotionInfo(device).rightControl = GetSyntheticMotionControl(value);
+        }
+
+        public int SyntheticMotionTriggerThreshold
+        {
+            get => Global.GetSyntheticMotionInfo(device).triggerThreshold;
+            set => Global.GetSyntheticMotionInfo(device).triggerThreshold = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_TRIGGER_THRESHOLD,
+                SyntheticMotionInfo.MAX_TRIGGER_THRESHOLD);
+        }
+
+        public int SyntheticMotionPulseDuration
+        {
+            get => Global.GetSyntheticMotionInfo(device).pulseDurationMs;
+            set => Global.GetSyntheticMotionInfo(device).pulseDurationMs = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_PULSE_DURATION_MS,
+                SyntheticMotionInfo.MAX_PULSE_DURATION_MS);
+        }
+
+        public int SyntheticMotionGyroPeak
+        {
+            get => Global.GetSyntheticMotionInfo(device).gyroPeak;
+            set => Global.GetSyntheticMotionInfo(device).gyroPeak = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_GYRO_PEAK,
+                SyntheticMotionInfo.MAX_GYRO_PEAK);
+        }
+
+        public double SyntheticMotionTiltAngle
+        {
+            get => Global.GetSyntheticMotionInfo(device).tiltAngle;
+            set => Global.GetSyntheticMotionInfo(device).tiltAngle = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_TILT_ANGLE,
+                SyntheticMotionInfo.MAX_TILT_ANGLE);
+        }
+
+        public bool SyntheticMotionInvert
+        {
+            get => Global.GetSyntheticMotionInfo(device).invert;
+            set => Global.GetSyntheticMotionInfo(device).invert = value;
+        }
 
         public OutContType ContType
         {
@@ -3054,6 +3196,19 @@ namespace DS4WinWPF.DS4Forms.ViewModels
             }
 
             return result;
+        }
+
+        private static int GetSyntheticMotionControlIndex(DS4Controls control)
+        {
+            int index = Array.IndexOf(syntheticMotionControlChoices, control);
+            return index >= 0 ? index : 0;
+        }
+
+        private static DS4Controls GetSyntheticMotionControl(int index)
+        {
+            return index >= 0 && index < syntheticMotionControlChoices.Length ?
+                syntheticMotionControlChoices[index] :
+                DS4Controls.None;
         }
 
         private int FindGyroMouseStickSmoothMethodIndex()

@@ -2212,6 +2212,12 @@ namespace DS4Windows
             return m_Config.gyroControlsInf[index];
         }
 
+        public static SyntheticMotionInfo[] SyntheticMotionInf => m_Config.syntheticMotionInfo;
+        public static SyntheticMotionInfo GetSyntheticMotionInfo(int index)
+        {
+            return m_Config.syntheticMotionInfo[index];
+        }
+
         public static SteeringWheelSmoothingInfo[] WheelSmoothInfo => m_Config.wheelSmoothInfo;
         public static int[] SAWheelFuzzValues => m_Config.saWheelFuzzValues;
 
@@ -3750,6 +3756,12 @@ namespace DS4Windows
             new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
             new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
             new GyroControlsInfo(), new GyroControlsInfo(), new GyroControlsInfo(),
+        };
+        public SyntheticMotionInfo[] syntheticMotionInfo = new SyntheticMotionInfo[Global.TEST_PROFILE_ITEM_COUNT]
+        {
+            new SyntheticMotionInfo(), new SyntheticMotionInfo(), new SyntheticMotionInfo(),
+            new SyntheticMotionInfo(), new SyntheticMotionInfo(), new SyntheticMotionInfo(),
+            new SyntheticMotionInfo(), new SyntheticMotionInfo(), new SyntheticMotionInfo(),
         };
         public string[] sATriggers = new string[Global.TEST_PROFILE_ITEM_COUNT]
         { BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS, BackingStore.DEFAULT_SA_TRIGGERS,
@@ -9546,6 +9558,7 @@ namespace DS4Windows
             buttonMouseInfos[device].Reset();
             buttonAbsMouseInfos[device].Reset();
             gyroControlsInf[device].Reset();
+            syntheticMotionInfo[device].Reset();
 
             enableTouchToggle[device] = DEFAULT_TOUCH_TOGGLE;
             idleDisconnectTimeout[device] = 0;

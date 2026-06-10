@@ -1589,6 +1589,63 @@
                             </ComboBox>
                         </StackPanel>
 
+                        <GroupBox Header="Synthetic Motion" Margin="0,0,0,10" Padding="2,4">
+                            <StackPanel>
+                                <CheckBox x:Name="syntheticMotionEnabledCheck" Content="Map buttons to virtual DS4 motion"
+                                          IsChecked="{Binding SyntheticMotionEnabled}" Margin="{StaticResource spaceMargin}" />
+
+                                <StackPanel IsEnabled="{Binding IsChecked, ElementName=syntheticMotionEnabledCheck, TargetNullValue=False, FallbackValue=False}">
+                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
+                                        <Label Content="Up" />
+                                        <ComboBox Width="145" Margin="8,0,0,0" ItemsSource="{Binding SyntheticMotionControlItems}"
+                                                  SelectedIndex="{Binding SyntheticMotionUpControlIndex,FallbackValue=5}" />
+
+                                        <Label Content="Down" Margin="16,0,0,0" />
+                                        <ComboBox Width="145" Margin="8,0,0,0" ItemsSource="{Binding SyntheticMotionControlItems}"
+                                                  SelectedIndex="{Binding SyntheticMotionDownControlIndex,FallbackValue=6}" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
+                                        <Label Content="Left" />
+                                        <ComboBox Width="145" Margin="8,0,0,0" ItemsSource="{Binding SyntheticMotionControlItems}"
+                                                  SelectedIndex="{Binding SyntheticMotionLeftControlIndex,FallbackValue=0}" />
+
+                                        <Label Content="Right" Margin="16,0,0,0" />
+                                        <ComboBox Width="145" Margin="8,0,0,0" ItemsSource="{Binding SyntheticMotionControlItems}"
+                                                  SelectedIndex="{Binding SyntheticMotionRightControlIndex,FallbackValue=0}" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
+                                        <Label Content="Analog Threshold" />
+                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
+                                                Value="{Binding SyntheticMotionTriggerThreshold,UpdateSourceTrigger=LostFocus}"
+                                                Minimum="0" Maximum="255" Increment="1" />
+
+                                        <Label Content="Duration" Margin="16,0,0,0" />
+                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
+                                                Value="{Binding SyntheticMotionPulseDuration,UpdateSourceTrigger=LostFocus}"
+                                                Minimum="60" Maximum="1000" Increment="10" />
+                                        <Label Content="ms" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Margin="{StaticResource spaceMargin}">
+                                        <Label Content="Gyro Strength" />
+                                        <xctk:IntegerUpDown d:IsHidden="True" MinWidth="75" Margin="8,0,0,0"
+                                                Value="{Binding SyntheticMotionGyroPeak,UpdateSourceTrigger=LostFocus}"
+                                                Minimum="1000" Maximum="30000" Increment="500" />
+
+                                        <Label Content="Tilt Angle" Margin="16,0,0,0" />
+                                        <xctk:DoubleUpDown d:IsHidden="True" MinWidth="60" Margin="8,0,0,0"
+                                                FormatString="F0" Value="{Binding SyntheticMotionTiltAngle,UpdateSourceTrigger=LostFocus}"
+                                                Minimum="10" Maximum="120" Increment="5" />
+                                        <Label Content="deg" />
+
+                                        <CheckBox Content="Invert" IsChecked="{Binding SyntheticMotionInvert}" Margin="16,0,0,0" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+
                         <TabControl SelectedIndex="{Binding GyroOutModeIndex, FallbackValue='0'}" BorderBrush="{x:Null}" Margin="{StaticResource spaceMargin}">
                             <TabItem Header="{lex:Loc GyroControlsAccel}" Visibility="Collapsed">
                                 <StackPanel x:Name="gyroControlsPanel">

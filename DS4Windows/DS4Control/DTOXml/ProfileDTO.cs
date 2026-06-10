@@ -913,6 +913,12 @@ namespace DS4WinWPF.DS4Control.DTOXml
             get; set;
         }
 
+        [XmlElement("SyntheticMotionSettings")]
+        public SyntheticMotionSettings SyntheticMotionSettings
+        {
+            get; set;
+        }
+
         [XmlElement("GyroMouseSmoothingSettings")]
         public GyroMouseSmoothingSettings GyroMouseSmoothingSettings
         {
@@ -1450,6 +1456,7 @@ namespace DS4WinWPF.DS4Control.DTOXml
             SATriggers = BackingStore.DEFAULT_SA_TRIGGERS;
             SASteeringWheelSmoothingOptions = new SASteeringWheelSmoothingOptions();
             GyroControlsSettings = new GyroControlsSettings();
+            SyntheticMotionSettings = new SyntheticMotionSettings();
             GyroMouseStickSmoothingSettings = new GyroMouseStickSmoothingSettings();
             GyroSwipeSettings = new GyroSwipeSettings();
             GyroMouseSmoothingSettings = new GyroMouseSmoothingSettings();
@@ -1624,6 +1631,19 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 TriggerCond = source.gyroControlsInf[deviceIndex].triggerCond,
                 TriggerTurns = source.gyroControlsInf[deviceIndex].triggerTurns,
                 Toggle = source.gyroControlsInf[deviceIndex].triggerToggle,
+            };
+            SyntheticMotionSettings = new SyntheticMotionSettings()
+            {
+                Enabled = source.syntheticMotionInfo[deviceIndex].enabled,
+                UpControl = source.syntheticMotionInfo[deviceIndex].upControl,
+                DownControl = source.syntheticMotionInfo[deviceIndex].downControl,
+                LeftControl = source.syntheticMotionInfo[deviceIndex].leftControl,
+                RightControl = source.syntheticMotionInfo[deviceIndex].rightControl,
+                TriggerThreshold = source.syntheticMotionInfo[deviceIndex].triggerThreshold,
+                PulseDurationMs = source.syntheticMotionInfo[deviceIndex].pulseDurationMs,
+                GyroPeak = source.syntheticMotionInfo[deviceIndex].gyroPeak,
+                TiltAngle = source.syntheticMotionInfo[deviceIndex].tiltAngle,
+                Invert = source.syntheticMotionInfo[deviceIndex].invert,
             };
 
             _gyroMouseStickTriggers = source.sAMouseStickTriggers[deviceIndex];
@@ -2218,6 +2238,20 @@ namespace DS4WinWPF.DS4Control.DTOXml
                 destination.gyroControlsInf[deviceIndex].triggerCond = GyroControlsSettings.TriggerCond;
                 destination.gyroControlsInf[deviceIndex].triggerTurns = GyroControlsSettings.TriggerTurns;
                 destination.gyroControlsInf[deviceIndex].triggerToggle = GyroControlsSettings.Toggle;
+            }
+
+            if (SyntheticMotionSettings != null)
+            {
+                destination.syntheticMotionInfo[deviceIndex].enabled = SyntheticMotionSettings.Enabled;
+                destination.syntheticMotionInfo[deviceIndex].upControl = SyntheticMotionSettings.UpControl;
+                destination.syntheticMotionInfo[deviceIndex].downControl = SyntheticMotionSettings.DownControl;
+                destination.syntheticMotionInfo[deviceIndex].leftControl = SyntheticMotionSettings.LeftControl;
+                destination.syntheticMotionInfo[deviceIndex].rightControl = SyntheticMotionSettings.RightControl;
+                destination.syntheticMotionInfo[deviceIndex].triggerThreshold = SyntheticMotionSettings.TriggerThreshold;
+                destination.syntheticMotionInfo[deviceIndex].pulseDurationMs = SyntheticMotionSettings.PulseDurationMs;
+                destination.syntheticMotionInfo[deviceIndex].gyroPeak = SyntheticMotionSettings.GyroPeak;
+                destination.syntheticMotionInfo[deviceIndex].tiltAngle = SyntheticMotionSettings.TiltAngle;
+                destination.syntheticMotionInfo[deviceIndex].invert = SyntheticMotionSettings.Invert;
             }
 
             destination.sAMouseStickTriggers[deviceIndex] = _gyroMouseStickTriggers;
@@ -2904,6 +2938,103 @@ namespace DS4WinWPF.DS4Control.DTOXml
         {
             get => _toggle.ToString();
             set => _toggle = XmlDataUtilities.StrToBool(value);
+        }
+    }
+
+    public class SyntheticMotionSettings
+    {
+        private bool _enabled = SyntheticMotionInfo.DEFAULT_ENABLED;
+        [XmlIgnore]
+        public bool Enabled
+        {
+            get => _enabled;
+            set => _enabled = value;
+        }
+
+        [XmlElement("Enabled")]
+        public string EnabledString
+        {
+            get => _enabled.ToString();
+            set => _enabled = XmlDataUtilities.StrToBool(value);
+        }
+
+        [XmlElement("UpControl")]
+        public DS4Controls UpControl
+        {
+            get; set;
+        } = SyntheticMotionInfo.DEFAULT_UP_CONTROL;
+
+        [XmlElement("DownControl")]
+        public DS4Controls DownControl
+        {
+            get; set;
+        } = SyntheticMotionInfo.DEFAULT_DOWN_CONTROL;
+
+        [XmlElement("LeftControl")]
+        public DS4Controls LeftControl
+        {
+            get; set;
+        } = SyntheticMotionInfo.DEFAULT_LEFT_CONTROL;
+
+        [XmlElement("RightControl")]
+        public DS4Controls RightControl
+        {
+            get; set;
+        } = SyntheticMotionInfo.DEFAULT_RIGHT_CONTROL;
+
+        private int _triggerThreshold = SyntheticMotionInfo.DEFAULT_TRIGGER_THRESHOLD;
+        [XmlElement("TriggerThreshold")]
+        public int TriggerThreshold
+        {
+            get => _triggerThreshold;
+            set => _triggerThreshold = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_TRIGGER_THRESHOLD,
+                SyntheticMotionInfo.MAX_TRIGGER_THRESHOLD);
+        }
+
+        private int _pulseDurationMs = SyntheticMotionInfo.DEFAULT_PULSE_DURATION_MS;
+        [XmlElement("PulseDurationMs")]
+        public int PulseDurationMs
+        {
+            get => _pulseDurationMs;
+            set => _pulseDurationMs = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_PULSE_DURATION_MS,
+                SyntheticMotionInfo.MAX_PULSE_DURATION_MS);
+        }
+
+        private int _gyroPeak = SyntheticMotionInfo.DEFAULT_GYRO_PEAK;
+        [XmlElement("GyroPeak")]
+        public int GyroPeak
+        {
+            get => _gyroPeak;
+            set => _gyroPeak = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_GYRO_PEAK,
+                SyntheticMotionInfo.MAX_GYRO_PEAK);
+        }
+
+        private double _tiltAngle = SyntheticMotionInfo.DEFAULT_TILT_ANGLE;
+        [XmlElement("TiltAngle")]
+        public double TiltAngle
+        {
+            get => _tiltAngle;
+            set => _tiltAngle = Math.Clamp(value,
+                SyntheticMotionInfo.MIN_TILT_ANGLE,
+                SyntheticMotionInfo.MAX_TILT_ANGLE);
+        }
+
+        private bool _invert = SyntheticMotionInfo.DEFAULT_INVERT;
+        [XmlIgnore]
+        public bool Invert
+        {
+            get => _invert;
+            set => _invert = value;
+        }
+
+        [XmlElement("Invert")]
+        public string InvertString
+        {
+            get => _invert.ToString();
+            set => _invert = XmlDataUtilities.StrToBool(value);
         }
     }
 

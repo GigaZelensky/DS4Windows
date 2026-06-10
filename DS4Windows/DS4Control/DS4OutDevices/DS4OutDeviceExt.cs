@@ -31,6 +31,7 @@ namespace DS4Windows
     {
         private byte[] rawOutReportEx = new byte[63];
         private DS4_REPORT_EX outDS4Report;
+        private readonly SyntheticDs4MotionPulse syntheticMotionPulse = new SyntheticDs4MotionPulse();
         private Thread awaitOutBuffThread;
         private bool awaitThreadLoopRunning;
         public delegate void ReceivedOutBufferHandler(DS4OutDeviceExt sender,
@@ -182,15 +183,17 @@ namespace DS4Windows
             outDS4Report.sCurrentTouch.bTouchData2[1] = (byte)((state.TrackPadTouch1.X >> 8) & 0x0F | (state.TrackPadTouch1.Y << 4) & 0xF0);
             outDS4Report.sCurrentTouch.bTouchData2[2] = (byte)(state.TrackPadTouch1.Y >> 4);
 
+            SixAxis outputMotion = syntheticMotionPulse.Apply(state, device);
+
             // Flip some coordinates back to DS4 device coordinate system
             //outDS4Report.wGyroX = (short)-state.Motion.gyroYawFull;
             //outDS4Report.wGyroY = (short)state.Motion.gyroPitchFull;
-            outDS4Report.wGyroX = (short)state.Motion.gyroPitchFull;
-            outDS4Report.wGyroY = (short)-state.Motion.gyroYawFull;
-            outDS4Report.wGyroZ = (short)-state.Motion.gyroRollFull;
-            outDS4Report.wAccelX = (short)-state.Motion.accelXFull;
-            outDS4Report.wAccelY = (short)-state.Motion.accelYFull;
-            outDS4Report.wAccelZ = (short)state.Motion.accelZFull;
+            outDS4Report.wGyroX = (short)outputMotion.gyroPitchFull;
+            outDS4Report.wGyroY = (short)-outputMotion.gyroYawFull;
+            outDS4Report.wGyroZ = (short)-outputMotion.gyroRollFull;
+            outDS4Report.wAccelX = (short)-outputMotion.accelXFull;
+            outDS4Report.wAccelY = (short)-outputMotion.accelYFull;
+            outDS4Report.wAccelZ = (short)outputMotion.accelZFull;
 
             // USB DS4 v.1 battery level range is [0-11]
             outDS4Report.bBatteryLvlSpecial = (byte)(state.Battery / 11);
@@ -205,6 +208,7 @@ namespace DS4Windows
 
         public override void ResetState(bool submit = true)
         {
+            syntheticMotionPulse.Reset();
             outDS4Report = default(DS4_REPORT_EX);
             outDS4Report.wButtons &= unchecked((ushort)~0X0F);
             outDS4Report.wButtons |= 0x08;
@@ -322,6 +326,8 @@ namespace DS4Windows
 
         public override void Disconnect()
         {
+            syntheticMotionPulse.Reset();
+
             // Flag CancellationTokenSource before performing Disconnect.
             // More of a precaution than anything
             tokenSource?.Cancel();
